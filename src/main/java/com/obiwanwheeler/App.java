@@ -1,40 +1,15 @@
 package com.obiwanwheeler;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
 import java.io.IOException;
-import java.util.Map;
 
-/**
- * JavaFX App
- */
-public class App extends Application {
+public class App {
 
-    private static Scene scene;
-    public static final Map<String, String> fxmlFiles = Map.of("reviewer_home","reviewerhome.fxml","card_front", "cardfront.fxml");
+    public void runApp(){
 
-    @Override
-    public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML(fxmlFiles.get("reviewer_home")), 640, 480);
-        stage.setScene(scene);
-        stage.show();
+        Reviewer reviewer = new Reviewer();;
+
+
+        //do the review
+        reviewer.doReview();
     }
-
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml));
-        return fxmlLoader.load();
-    }
-
-    public static void main(String[] args) {
-        launch();
-    }
-
 }
