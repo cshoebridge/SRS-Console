@@ -1,7 +1,10 @@
 package com.obiwanwheeler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.Duration;
 
 public class Card {
 
@@ -10,11 +13,19 @@ public class Card {
 
     private CardState state;
 
+    //private LocalDate initialViewDate;
+    @JsonIgnore private Duration interval;
+
     @JsonCreator
-    public Card(@JsonProperty("frontSide") String frontSide, @JsonProperty("backSide") String backSide, @JsonProperty("state") CardState state) {
+    public Card(@JsonProperty("frontSide") String frontSide, @JsonProperty("backSide") String backSide,
+                @JsonProperty("state") CardState state /*, @JsonProperty("initialViewDate") LocalDate initialViewDate,*/) {
         this.frontSide = frontSide;
         this.backSide = backSide;
         this.state = state;
+        //this.initialViewDate = initialViewDate;
+        //TODO get this property from JSON
+        this.interval = Duration.ZERO;
+
     }
 
     //region getters and setters
@@ -41,6 +52,15 @@ public class Card {
     public void setState(CardState state) {
         this.state = state;
     }
+
+    public Duration getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Duration interval) {
+        this.interval = interval;
+    }
+
     //endregion
 
     public enum CardState{

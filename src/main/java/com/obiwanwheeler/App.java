@@ -1,13 +1,10 @@
 package com.obiwanwheeler;
 
-import java.io.IOException;
-
 public class App {
 
     public void runApp(){
 
-        Reviewer reviewer = new Reviewer();;
-
+        Reviewer reviewer = new Reviewer("src/main/resources/com/obiwanwheeler/decks/testDeck.json");
 
         //do the review
         reviewer.doReview();

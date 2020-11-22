@@ -1,17 +1,18 @@
 package com.obiwanwheeler;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class Deck {
 
     public List<Card> cards;
 
-    public Deck(List<Card> cards) {
+    @JsonCreator
+    public Deck(@JsonProperty("cards") List<Card> cards) {
         this.cards = cards;
     }
 
-    public List<Card> getCards() {
-        return cards;
-    }
 
-    //private String deckFilePath;
 }

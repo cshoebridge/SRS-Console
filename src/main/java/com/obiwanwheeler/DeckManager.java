@@ -1,20 +1,22 @@
 package com.obiwanwheeler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
 public class DeckManager {
 
-    public static List<List<Card>> splitDeck(Deck fullDeck){
-        List<Card> newCards = fullDeck.cards.stream().filter(c -> c.getState() == Card.CardState.NEW).collect(toList());
+    public static List<Deck> splitDeck(Deck fullDeck){
+        Deck newCards = new Deck(fullDeck.cards.stream().filter(c -> c.getState() == Card.CardState.NEW).collect(toList()));
         //at the start of any given review session the learning list will be empty, as cards may only enter the 'learning' state at review time.
-        List<Card> learningCards = Collections.emptyList();
-        List<Card> learntCards = fullDeck.cards.stream().filter(c -> c.getState() == Card.CardState.LEARNT).collect(toList());
+        Deck learningCards = new Deck(new LinkedList<>());
+        Deck learntCards = new Deck(fullDeck.cards.stream().filter(c -> c.getState() == Card.CardState.LEARNT).collect(toList()));
 
-        return Arrays.asList(newCards, learningCards, learntCards);
+        return new LinkedList<>(Arrays.asList(newCards, learningCards, learntCards));
+    }
+
+    public static List<Card> getLowestIntervalCards(Deck splitDeck){
+        int minInterval = splitDeck.cards.stream().min(Comparator.comparing(Card::getInterval)).orElseThrow(NoSuchElementException::new).getInterval().toMinutesPart();
+        return splitDeck.cards.stream().filter(c -> c.getInterval().toMinutesPart() == minInterval).collect(toList());
     }
 }
