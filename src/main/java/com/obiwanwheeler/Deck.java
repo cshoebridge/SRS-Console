@@ -1,5 +1,5 @@
 package com.obiwanwheeler;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,6 +13,4 @@ public class Deck {
     public Deck(@JsonProperty("cards") List<Card> cards) {
         this.cards = cards;
     }
-
-
 }

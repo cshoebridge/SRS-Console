@@ -1,10 +1,10 @@
 package com.obiwanwheeler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Duration;
+import java.time.LocalDate;
 
 public class Card {
 
@@ -13,19 +13,22 @@ public class Card {
 
     private CardState state;
 
-    //private LocalDate initialViewDate;
-    @JsonIgnore private Duration interval;
+    private Duration daysFromFirstSeenToNextReview;
+
+    private final boolean shouldBeReviewed;
 
     @JsonCreator
     public Card(@JsonProperty("frontSide") String frontSide, @JsonProperty("backSide") String backSide,
-                @JsonProperty("state") CardState state /*, @JsonProperty("initialViewDate") LocalDate initialViewDate,*/) {
+                @JsonProperty("state") CardState state ,
+                @JsonProperty("initialViewDate") LocalDate initialViewDate,
+                @JsonProperty ("daysFromFirstSeenToNextReview") Duration daysFromFirstSeenToNextReview) {
         this.frontSide = frontSide;
         this.backSide = backSide;
         this.state = state;
-        //this.initialViewDate = initialViewDate;
-        //TODO get this property from JSON
-        this.interval = Duration.ZERO;
-
+        //TODO get these properties from JSON
+        this.daysFromFirstSeenToNextReview = daysFromFirstSeenToNextReview;
+        LocalDate nextReviewDate = initialViewDate.plus(daysFromFirstSeenToNextReview);
+        shouldBeReviewed = LocalDate.now().isAfter(nextReviewDate) || LocalDate.now().equals(nextReviewDate);
     }
 
     //region getters and setters
@@ -53,17 +56,20 @@ public class Card {
         this.state = state;
     }
 
-    public Duration getInterval() {
-        return interval;
+    public Duration getDaysFromFirstSeenToNextReview() {
+        return daysFromFirstSeenToNextReview;
     }
 
-    public void setInterval(Duration interval) {
-        this.interval = interval;
+    public void setDaysFromFirstSeenToNextReview(Duration daysFromFirstSeenToNextReview) {
+        this.daysFromFirstSeenToNextReview = daysFromFirstSeenToNextReview;
     }
 
+    public boolean getShouldBeReviewed() {
+        return shouldBeReviewed;
+    }
     //endregion
 
     public enum CardState{
-        NEW, LEARNT, LEARNING;
+        NEW, LEARNT, LEARNING
     }
 }

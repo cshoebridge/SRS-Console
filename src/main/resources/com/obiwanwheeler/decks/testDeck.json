@@ -2,10 +2,14 @@
   "cards" : [ {
     "frontSide" : "subete no sekinin watashi ga toru!",
     "backSide" : "I'll take all responsibility",
-    "state" : "LEARNT"
+    "state" : "LEARNT",
+    "initialViewDate": "24-11-2020",
+    "daysFromFirstSeenToNextReview": "PT24H"
   }, {
     "frontSide" : "baka ni shinaide kudasai",
     "backSide" : "please don't make fun of me",
-    "state" : "LEARNT"
+    "state" : "LEARNT",
+    "initialViewDate": "24-11-2020",
+    "daysFromFirstSeenToNextReview": "PT24H"
   } ]
 }
