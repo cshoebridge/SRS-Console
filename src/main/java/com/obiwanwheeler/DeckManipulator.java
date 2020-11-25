@@ -12,6 +12,10 @@ public class DeckManipulator {
         return new Deck(fullDeck.cards.stream().filter(Card::getShouldBeReviewed).collect(toList()));
     }
 
+    public Deck getCardsNotBeingReviewedToday(Deck fullDeck){
+        return new Deck(fullDeck.cards.stream().filter(c -> !c.getShouldBeReviewed()).collect(toList()));
+    }
+
     public List<Deck> splitDeck(Deck filteredDeck){
         Deck newCards = new Deck(filteredDeck.cards.stream().filter(c -> c.getState() == Card.CardState.NEW).collect(toList()));
         //at the start of any given review session the learning list will be empty, as cards may only enter the 'learning' state at review time.

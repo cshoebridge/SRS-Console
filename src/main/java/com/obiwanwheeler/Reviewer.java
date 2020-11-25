@@ -5,12 +5,16 @@ import java.util.*;
 
 public class Reviewer {
 
-    private final List<Deck> splitDeck;
     private final Random random = new Random();
     private final Scanner scanner = new Scanner(System.in);
+
     private final String deckFilePath;
+
     private final int totalNumberOfCardsToBeReviewed;
+    private final List<Card> unchangedCards;
     private final Deck updatedDeck = new Deck(new LinkedList<>());
+
+    private final List<Deck> splitDeck;
 
     public Reviewer(String deckFilePath){
 
@@ -19,6 +23,9 @@ public class Reviewer {
         //TODO get file from FX
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
         assert deckToReview != null;
+
+        unchangedCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsNotBeingReviewedToday(deckToReview).cards;
+
         Deck filteredDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsToBeReviewedToday(deckToReview);
         totalNumberOfCardsToBeReviewed = filteredDeck.cards.size();
         splitDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.splitDeck(filteredDeck);
@@ -85,27 +92,53 @@ public class Reviewer {
 
         boolean markedGood = scanner.next().equals("y");
 
-        if (!markedGood && reviewedCard.getState() == Card.CardState.LEARNT){
-            deckReviewedCardComesFrom.cards.remove(reviewedCard);
-            splitDeck.get(Card.CardState.LEARNING.ordinal()).cards.add(reviewedCard);
+        if (!markedGood){
+            processCardMarkedBad(reviewedCard, deckReviewedCardComesFrom);
         }
         else{
-
-            boolean cardIsFinishedForSession = IntervalHandler.INTERVAL_HANDLER_SINGLETON.updateInterval(reviewedCard, markedGood);
-
-            if (cardIsFinishedForSession){
-                deckReviewedCardComesFrom.cards.remove(reviewedCard);
-                updatedDeck.cards.add(reviewedCard);
-            }
+            processCardMarkedGood(reviewedCard, deckReviewedCardComesFrom);
         }
+    }
+
+    private void processCardMarkedBad(Card markedCard, Deck deckMarkedCardComesFrom){
+        if (markedCard.getState() == Card.CardState.LEARNT){
+            IntervalHandler.INTERVAL_HANDLER_SINGLETON.relearnCard(markedCard);
+            moveCardToDifferentDeck(markedCard, deckMarkedCardComesFrom, splitDeck.get(Card.CardState.LEARNING.ordinal()));
+        }
+        else {
+            IntervalHandler.INTERVAL_HANDLER_SINGLETON.decreaseInterval(markedCard);
+        }
+    }
+
+    private void processCardMarkedGood(Card markedCard, Deck deckMarkedCardComesFrom){
+        IntervalHandler.INTERVAL_HANDLER_SINGLETON.increaseInterval(markedCard);
+
+        if (checkIfCardIsFinishedForSession(markedCard)){
+            finishReviewingCardForSession(markedCard, deckMarkedCardComesFrom);
+        }
+    }
+
+    private void moveCardToDifferentDeck(Card cardToMove, Deck sourceDeck, Deck targetDeck){
+        sourceDeck.cards.remove(cardToMove);
+        targetDeck.cards.add(cardToMove);
     }
 
     private boolean isFinished(Deck updatedDeck){
         return updatedDeck.cards.size() == totalNumberOfCardsToBeReviewed;
     }
 
+    public boolean checkIfCardIsFinishedForSession(Card cardToCheck){
+        return cardToCheck.getState() == Card.CardState.LEARNT;
+    }
+
+    private void finishReviewingCardForSession(Card finishedCard, Deck sourceDeck){
+        sourceDeck.cards.remove(finishedCard);
+        updatedDeck.cards.add(finishedCard);
+    }
+
     private void finishReview(){
         System.out.println("no cards left to review today");
+        updatedDeck.cards.addAll(unchangedCards);
         DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
     }
 }
