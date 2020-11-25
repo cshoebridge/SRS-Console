@@ -96,6 +96,34 @@ public class Card {
     }
     //endregion
 
+    //region builder class
+    public static class Builder{
+        private String frontSide;
+        private String backSide;
+
+        private CardState state;
+
+        public Builder setFrontSide(String frontSide) {
+            this.frontSide = frontSide;
+            return this;
+        }
+
+        public Builder setBackSide(String backSide) {
+            this.backSide = backSide;
+            return this;
+        }
+
+        public Builder setState(CardState state) {
+            this.state = state;
+            return this;
+        }
+
+        public Card build(){
+            return new Card(frontSide, backSide, state, LocalDate.now(), Period.ZERO);
+        }
+    }
+    //endregion
+
     public enum CardState{
         NEW, LEARNT, LEARNING
     }
