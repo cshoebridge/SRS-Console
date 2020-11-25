@@ -33,12 +33,14 @@ public class Reviewer {
 
     public void doReview(){
         //do review
+        CardSelector cardSelector = new CardSelector(splitDeck);
+
         while(!isFinished(updatedDeck)){
             //chooses a deck to show a card from
-            Deck deckToPullFrom = chooseADeck();
+            Deck deckToPullFrom = cardSelector.chooseADeck();
             //then tries to remove it from queue if empty, moving onto another iteration if successful
             if (ableToRemoveDeckFromQueue(deckToPullFrom)){
-                removeDeckFromQueue(deckToPullFrom);
+                cardSelector.removeDeckFromQueue(deckToPullFrom);
                 continue;
             }
             //get lowest interval cards in that deck
@@ -53,28 +55,12 @@ public class Reviewer {
         finishReview();
     }
 
-    private Deck chooseADeck(){
-
-        Deck chosenDeck;
-
-        //makes sure to choose a deck that actually exists
-        do {
-            chosenDeck = splitDeck.get(random.nextInt(splitDeck.size()));
-        } while(chosenDeck.cards == null);
-
-        return chosenDeck;
-    }
-
-    private boolean ableToRemoveDeckFromQueue(Deck potentiallyEmptyDeck){
+    public boolean ableToRemoveDeckFromQueue(Deck potentiallyEmptyDeck){
         //if all the cards have already been removed from it, it no longer needs to exist in that review session
         //unless it is the learning queue, as even if initially empty, cards may move into it:
         //it is the only queue with this behaviour
         return potentiallyEmptyDeck.cards.stream().noneMatch(c -> c.getState() == Card.CardState.LEARNING) &&
                 potentiallyEmptyDeck.cards.isEmpty();
-    }
-
-    private void removeDeckFromQueue(Deck deckToRemove){
-        splitDeck.remove(deckToRemove);
     }
 
     //TODO do this in FX

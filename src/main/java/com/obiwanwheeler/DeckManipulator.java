@@ -8,6 +8,8 @@ public class DeckManipulator {
 
     public static final DeckManipulator DECK_MANIPULATOR_SINGLETON = new DeckManipulator();
 
+    private DeckManipulator(){}
+
     public Deck getCardsToBeReviewedToday(Deck fullDeck){
         return new Deck(fullDeck.cards.stream().filter(Card::getShouldBeReviewed).collect(toList()));
     }

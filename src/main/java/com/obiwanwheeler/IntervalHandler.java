@@ -13,6 +13,8 @@ public final class IntervalHandler {
     private final int correctAnswerIncreaseInDays = 3;
     private final int incorrectAnswerDecreaseInDays = 2;
 
+    private IntervalHandler(){};
+
     //region when correct answer given
 
     public void increaseInterval(Card cardToIncrease){
