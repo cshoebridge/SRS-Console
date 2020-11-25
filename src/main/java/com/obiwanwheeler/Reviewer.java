@@ -25,11 +25,6 @@ public class Reviewer {
     }
 
     public void doReview(){
-        //check if there is any cards to review today
-        if (totalNumberOfCardsToBeReviewed == 0){
-            System.out.println("no cards to review today");
-            return;
-        }
         //do review
         while(!isFinished(updatedDeck)){
             //chooses a deck to show a card from
@@ -110,6 +105,7 @@ public class Reviewer {
     }
 
     private void finishReview(){
+        System.out.println("no cards left to review today");
         DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
     }
 }
