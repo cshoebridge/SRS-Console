@@ -1,6 +1,7 @@
 package com.obiwanwheeler;
 
 import java.time.Duration;
+import java.time.Period;
 
 public final class IntervalHandler {
 
@@ -20,17 +21,17 @@ public final class IntervalHandler {
     private boolean increaseInterval(Card card){
 
         if (card.getState() == Card.CardState.NEW){
-            card.setDaysFromFirstSeenToNextReview(Duration.ofMinutes(1));
+            card.setMinutesUntilNextReviewInThisSession(Duration.ofMinutes(1));
             card.setState(Card.CardState.LEARNING);
             return false;
         }
         else {
-            switch(card.getDaysFromFirstSeenToNextReview().toMinutesPart()){
+            switch(card.getMinutesUntilNextReviewInThisSession().toMinutesPart()){
                 case 1:
-                    card.setDaysFromFirstSeenToNextReview(Duration.ofMinutes(10));
+                    card.setMinutesUntilNextReviewInThisSession(Duration.ofMinutes(10));
                     return false;
                 case 10:
-                    card.setDaysFromFirstSeenToNextReview(Duration.ofDays(1));
+                    card.setDaysFromFirstSeenToNextReview(Period.ofDays(1));
                     card.setState(Card.CardState.LEARNT);
                     return true;
                 default:
@@ -45,14 +46,14 @@ public final class IntervalHandler {
     private void decreaseInterval(Card card) {
 
         //if either of these is true, the cards interval cannot be decreased further
-        if (card.getState() != Card.CardState.NEW || card.getDaysFromFirstSeenToNextReview() != Duration.ofMinutes(1)){
+        if (card.getState() != Card.CardState.NEW || card.getMinutesUntilNextReviewInThisSession() != Duration.ofMinutes(1)){
             switch(card.getState()){
                 case LEARNT:
                     card.setState(Card.CardState.LEARNING);
-                    card.setDaysFromFirstSeenToNextReview(Duration.ofMinutes(10));
+                    card.setMinutesUntilNextReviewInThisSession(Duration.ofMinutes(10));
                     break;
                 case LEARNING:
-                    card.setDaysFromFirstSeenToNextReview(Duration.ofMinutes(1));
+                    card.setMinutesUntilNextReviewInThisSession(Duration.ofMinutes(1));
                     break;
             }
         }

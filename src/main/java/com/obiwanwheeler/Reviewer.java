@@ -1,5 +1,6 @@
 package com.obiwanwheeler;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Reviewer {
@@ -16,24 +17,30 @@ public class Reviewer {
         this.deckFilePath = deckFilePath;
 
         //TODO get file from FX
-        Deck deckToReview = DeckFileManager.DECK_FILE_MANAGER_SINGLETON.deserializeDeck(this.deckFilePath);
+        Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
         assert deckToReview != null;
-        Deck filteredDeck = DeckManager.DECK_MANAGER_SINGLETON.getCardsToBeReviewedToday(deckToReview);
-        totalNumberOfCardsToBeReviewed = deckToReview.cards.size();
-
-        splitDeck = DeckManager.DECK_MANAGER_SINGLETON.splitDeck(filteredDeck);
+        Deck filteredDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsToBeReviewedToday(deckToReview);
+        totalNumberOfCardsToBeReviewed = filteredDeck.cards.size();
+        splitDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.splitDeck(filteredDeck);
     }
 
     public void doReview(){
+        //check if there is any cards to review today
+        if (totalNumberOfCardsToBeReviewed == 0){
+            System.out.println("no cards to review today");
+            return;
+        }
         //do review
         while(!isFinished(updatedDeck)){
-
             //chooses a deck to show a card from
             Deck deckToPullFrom = chooseADeck();
-            //then tries to remove it from queue if empty.
-            tryToRemoveDeckFromQueue(deckToPullFrom);
+            //then tries to remove it from queue if empty, moving onto another iteration if successful
+            if (ableToRemoveDeckFromQueue(deckToPullFrom)){
+                removeDeckFromQueue(deckToPullFrom);
+                continue;
+            }
             //get lowest interval cards in that deck
-            List<Card> lowestIntervalCards = DeckManager.DECK_MANAGER_SINGLETON.getLowestIntervalCards(deckToPullFrom);
+            List<Card> lowestIntervalCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getLowestIntervalCards(deckToPullFrom);
             //chooses a card from those
             Card cardToReview = lowestIntervalCards.get(random.nextInt(deckToPullFrom.cards.size()));
             outputCardSides(cardToReview);
@@ -56,20 +63,26 @@ public class Reviewer {
         return chosenDeck;
     }
 
-    private void tryToRemoveDeckFromQueue(Deck potentiallyEmptyDeck){
-
+    private boolean ableToRemoveDeckFromQueue(Deck potentiallyEmptyDeck){
         //if all the cards have already been removed from it, it no longer needs to exist in that review session
         //unless it is the learning queue, as even if initially empty, cards may move into it:
         //it is the only queue with this behaviour
-        if (potentiallyEmptyDeck.cards.isEmpty() || potentiallyEmptyDeck.cards.stream().anyMatch(c -> c.getState() == Card.CardState.LEARNING)){
-            splitDeck.remove(potentiallyEmptyDeck);
-        }
+        return potentiallyEmptyDeck.cards.stream().noneMatch(c -> c.getState() == Card.CardState.LEARNING) &&
+                potentiallyEmptyDeck.cards.isEmpty();
+    }
+
+    private void removeDeckFromQueue(Deck deckToRemove){
+        splitDeck.remove(deckToRemove);
     }
 
     //TODO do this in FX
     private void outputCardSides(Card cardToOutput){
         System.out.println(cardToOutput.getFrontSide());
-        scanner.nextLine();
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println(cardToOutput.getFrontSide() + "\n" + cardToOutput.getBackSide());
     }
 
@@ -97,6 +110,6 @@ public class Reviewer {
     }
 
     private void finishReview(){
-        DeckFileManager.DECK_FILE_MANAGER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
+        DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
     }
 }

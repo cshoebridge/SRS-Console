@@ -1,10 +1,12 @@
 package com.obiwanwheeler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
 
 public class Card {
 
@@ -13,20 +15,25 @@ public class Card {
 
     private CardState state;
 
-    private Duration daysFromFirstSeenToNextReview;
+    private Period daysFromFirstSeenToNextReview;
 
-    private final boolean shouldBeReviewed;
+    private LocalDate initialViewDate;
+    @JsonIgnore private Duration minutesUntilNextReviewInThisSession;
+    @JsonIgnore private boolean shouldBeReviewed;
 
     @JsonCreator
     public Card(@JsonProperty("frontSide") String frontSide, @JsonProperty("backSide") String backSide,
                 @JsonProperty("state") CardState state ,
                 @JsonProperty("initialViewDate") LocalDate initialViewDate,
-                @JsonProperty ("daysFromFirstSeenToNextReview") Duration daysFromFirstSeenToNextReview) {
+                @JsonProperty ("daysFromFirstSeenToNextReview") Period daysFromFirstSeenToNextReview) {
         this.frontSide = frontSide;
         this.backSide = backSide;
         this.state = state;
         //TODO get these properties from JSON
         this.daysFromFirstSeenToNextReview = daysFromFirstSeenToNextReview;
+        this.initialViewDate = initialViewDate;
+
+        minutesUntilNextReviewInThisSession = daysFromFirstSeenToNextReview.getDays() >= 1 ? Duration.ofMinutes(-1) : Duration.ZERO;
         LocalDate nextReviewDate = initialViewDate.plus(daysFromFirstSeenToNextReview);
         shouldBeReviewed = LocalDate.now().isAfter(nextReviewDate) || LocalDate.now().equals(nextReviewDate);
     }
@@ -56,16 +63,36 @@ public class Card {
         this.state = state;
     }
 
-    public Duration getDaysFromFirstSeenToNextReview() {
+    public LocalDate getInitialViewDate() {
+        return initialViewDate;
+    }
+
+    public void setInitialViewDate(LocalDate initialViewDate){
+        this.initialViewDate = initialViewDate;
+    }
+
+    public Duration getMinutesUntilNextReviewInThisSession() {
+        return minutesUntilNextReviewInThisSession;
+    }
+
+    public void setMinutesUntilNextReviewInThisSession(Duration minutesUntilNextReviewInThisSession) {
+        this.minutesUntilNextReviewInThisSession = minutesUntilNextReviewInThisSession;
+    }
+
+    public Period getDaysFromFirstSeenToNextReview() {
         return daysFromFirstSeenToNextReview;
     }
 
-    public void setDaysFromFirstSeenToNextReview(Duration daysFromFirstSeenToNextReview) {
+    public void setDaysFromFirstSeenToNextReview(Period daysFromFirstSeenToNextReview) {
         this.daysFromFirstSeenToNextReview = daysFromFirstSeenToNextReview;
     }
 
     public boolean getShouldBeReviewed() {
         return shouldBeReviewed;
+    }
+
+    public void setShouldBeReviewed(boolean shouldBeReviewed){
+        this.shouldBeReviewed = shouldBeReviewed;
     }
     //endregion
 

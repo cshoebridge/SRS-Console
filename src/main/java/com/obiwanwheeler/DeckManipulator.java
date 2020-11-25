@@ -4,9 +4,9 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
-public class DeckManager {
+public class DeckManipulator {
 
-    public static final DeckManager DECK_MANAGER_SINGLETON = new DeckManager();
+    public static final DeckManipulator DECK_MANIPULATOR_SINGLETON = new DeckManipulator();
 
     public Deck getCardsToBeReviewedToday(Deck fullDeck){
         return new Deck(fullDeck.cards.stream().filter(Card::getShouldBeReviewed).collect(toList()));
@@ -22,7 +22,8 @@ public class DeckManager {
     }
 
     public List<Card> getLowestIntervalCards(Deck splitDeck){
-        int minInterval = splitDeck.cards.stream().min(Comparator.comparing(Card::getDaysFromFirstSeenToNextReview)).orElseThrow(NoSuchElementException::new).getDaysFromFirstSeenToNextReview().toMinutesPart();
-        return splitDeck.cards.stream().filter(c -> c.getDaysFromFirstSeenToNextReview().toMinutesPart() == minInterval).collect(toList());
+        int minInterval = splitDeck.cards.stream().min(Comparator.comparing(Card::getMinutesUntilNextReviewInThisSession)).
+                orElseThrow(NoSuchElementException::new).getMinutesUntilNextReviewInThisSession().toMinutesPart();
+        return splitDeck.cards.stream().filter(c -> c.getMinutesUntilNextReviewInThisSession().toMinutesPart() == minInterval).collect(toList());
     }
 }

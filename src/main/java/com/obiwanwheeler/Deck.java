@@ -13,4 +13,5 @@ public class Deck {
     public Deck(@JsonProperty("cards") List<Card> cards) {
         this.cards = cards;
     }
+
 }
