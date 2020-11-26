@@ -29,8 +29,8 @@ public final class DeckFileParser {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("unable to deserialize deck file");
+            return null;
         }
-        return null;
     }
 
     public void serializeDeck(String deckFilePath, Deck deckToWrite) {
@@ -41,6 +41,7 @@ public final class DeckFileParser {
             OBJECTMAPPER.writerWithDefaultPrettyPrinter().writeValue(deckFile, deckToWrite);
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("unable to serialize deck");
         }
     }
 }

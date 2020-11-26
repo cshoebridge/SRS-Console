@@ -27,7 +27,7 @@ public class OptionGroupFileParser {
         }catch(IOException e){
             e.printStackTrace();
             System.out.println("unable to deserialize option-group file");
+            return null;
         }
-        return null;
     }
 }

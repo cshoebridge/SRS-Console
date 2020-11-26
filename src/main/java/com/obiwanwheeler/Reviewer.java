@@ -20,10 +20,9 @@ public class Reviewer {
 
     private final int totalNumberOfCardsToBeReviewed;
     private final List<Card> unchangedCards;
+    private final List<Card> cardsToReviewToday = new LinkedList<>();
     private final Deck updatedDeck;
     private final IntervalHandler intervalHandler;
-
-    List<Card> cardsToReviewToday = new LinkedList<>();
 
     public Reviewer(String deckFilePath){
 
@@ -31,7 +30,6 @@ public class Reviewer {
 
         //TODO get file from FX
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
-        assert deckToReview != null;
 
         updatedDeck = new Deck(new LinkedList<>());
         updatedDeck.setOptionGroup(deckToReview.getOptionGroup());
@@ -45,13 +43,12 @@ public class Reviewer {
         List<Card> reappearingKnownCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getKnownCardsToBeReviewedToday(deckToReview);
         List<Card> potentialNewCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getNewCards(deckToReview);
 
-        for (int i = 0; i < numberOfNewCardsToLearnToday; i++) {
-            if (i == potentialNewCards.size()){
-                break;
+        if (potentialNewCards.size() != 0){
+            for (int i = 0; i < numberOfNewCardsToLearnToday || i == potentialNewCards.size(); i++) {
+                Card cardAboutToBeAdded = potentialNewCards.get(i);
+                cardAboutToBeAdded.setInitialViewDate(LocalDate.now());
+                cardsToReviewToday.add(cardAboutToBeAdded);
             }
-            Card cardAboutToBeAdded = potentialNewCards.get(i);
-            cardAboutToBeAdded.setInitialViewDate(LocalDate.now());
-            cardsToReviewToday.add(cardAboutToBeAdded);
         }
         cardsToReviewToday.addAll(reappearingKnownCards);
         totalNumberOfCardsToBeReviewed = cardsToReviewToday.size();
