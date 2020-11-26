@@ -1,19 +1,27 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.utilities;
+
+import com.obiwanwheeler.objects.Card;
+import com.obiwanwheeler.objects.OptionGroup;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
 public final class IntervalHandler {
 
-    public static final IntervalHandler INTERVAL_HANDLER_SINGLETON = new IntervalHandler();
     //TODO get this from config file
-    private final List<Integer> intervalSteps = List.of(1, 10);
-    private final int graduatingIntervalInDays = 1;
-    private final int correctAnswerIncreaseInDays = 3;
-    private final int incorrectAnswerDecreaseInDays = 2;
+    private final List<Integer> intervalSteps;
+    private final int graduatingIntervalInDays;
+    private final int correctAnswerIncreaseInDays;
+    private final int relapseDecreaseInDays;
 
-    private IntervalHandler(){};
+    public IntervalHandler(OptionGroup config) {
+        this.intervalSteps = config.getIntervalSteps();
+        this.graduatingIntervalInDays = config.getGraduatingIntervalInDays();
+        this.correctAnswerIncreaseInDays = config.getCorrectAnswerIncreaseInDays();
+        this.relapseDecreaseInDays = config.getRelapseDecreaseInDays();
+    }
 
     //region when correct answer given
 
@@ -44,7 +52,7 @@ public final class IntervalHandler {
         }
 
         int nextStepIndex = intervalSteps.indexOf(cardToIncrease.getMinutesUntilNextReviewInThisSession().toMinutesPart()) + 1;
-        changeMinutesIntervalStep(cardToIncrease, nextStepIndex);
+        changeMinutesIntervalStep(cardToIncrease, intervalSteps.get(nextStepIndex));
     }
 
     private void updateLearntCardInterval(Card cardToUpdate){
@@ -73,13 +81,13 @@ public final class IntervalHandler {
     }
 
     private boolean canDecreaseInterval(Card cardToCheck){
-        return cardToCheck.getState() != Card.CardState.NEW || cardToCheck.getMinutesUntilNextReviewInThisSession().toMinutesPart() != intervalSteps.get(0);
+        return cardToCheck.getState() != Card.CardState.NEW && cardToCheck.getMinutesUntilNextReviewInThisSession().toMinutesPart() != intervalSteps.get(0);
     }
 
     public void relearnCard(Card relapsedCard){
-        relapsedCard.setState(Card.CardState.LEARNING);
         relapsedCard.setMinutesUntilNextReviewInThisSession(Duration.ofMinutes(10));
-        relapsedCard.setDaysFromFirstSeenToNextReview(relapsedCard.getDaysFromFirstSeenToNextReview().minusDays(incorrectAnswerDecreaseInDays));
+        relapsedCard.setDaysFromFirstSeenToNextReview(relapsedCard.getDaysFromFirstSeenToNextReview().minusDays(relapseDecreaseInDays));
+        if (relapsedCard.getDaysFromFirstSeenToNextReview().isNegative()) relapsedCard.setDaysFromFirstSeenToNextReview(Period.ofDays(1));
     }
 
     //endregion

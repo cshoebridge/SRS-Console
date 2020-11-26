@@ -1,4 +1,4 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
 public class Card {
 
@@ -29,13 +30,18 @@ public class Card {
         this.frontSide = frontSide;
         this.backSide = backSide;
         this.state = state;
-        //TODO get these properties from JSON
-        this.daysFromFirstSeenToNextReview = daysFromFirstSeenToNextReview;
         this.initialViewDate = initialViewDate;
 
-        minutesUntilNextReviewInThisSession = daysFromFirstSeenToNextReview.getDays() >= 1 ? Duration.ofMinutes(-1) : Duration.ZERO;
-        LocalDate nextReviewDate = initialViewDate.plus(daysFromFirstSeenToNextReview);
-        shouldBeReviewed = LocalDate.now().isAfter(nextReviewDate) || LocalDate.now().equals(nextReviewDate);
+        if (state != CardState.NEW){
+            this.daysFromFirstSeenToNextReview = Objects.requireNonNullElse(daysFromFirstSeenToNextReview, Period.ZERO);
+            minutesUntilNextReviewInThisSession = daysFromFirstSeenToNextReview.getDays() >= 1 ? Duration.ofMinutes(-1) : Duration.ZERO;
+            LocalDate nextReviewDate = initialViewDate.plus(daysFromFirstSeenToNextReview);
+            shouldBeReviewed = LocalDate.now().isAfter(nextReviewDate) || LocalDate.now().equals(nextReviewDate);
+        }
+        else{
+            shouldBeReviewed = true;
+            minutesUntilNextReviewInThisSession = Duration.ZERO;
+        }
     }
 
     //region getters and setters
@@ -125,6 +131,6 @@ public class Card {
     //endregion
 
     public enum CardState{
-        NEW, LEARNT, LEARNING
+        NEW, LEARNING, LEARNT
     }
 }

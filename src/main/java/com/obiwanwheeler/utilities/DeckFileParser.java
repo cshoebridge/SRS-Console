@@ -1,13 +1,13 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.utilities;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.obiwanwheeler.objects.Deck;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 public final class DeckFileParser {
 
@@ -15,17 +15,20 @@ public final class DeckFileParser {
 
     private final ObjectMapper OBJECTMAPPER = new ObjectMapper();
 
+    private DeckFileParser(){}
+
     public Deck deserializeDeck(String deckFilePath) {
         File deckFile = new File(deckFilePath);
-        Deck deck;
+        Deck deserializedDeck;
 
         OBJECTMAPPER.registerModule(new JavaTimeModule());
 
         try {
-            deck = OBJECTMAPPER.readValue(deckFile, new TypeReference<>(){});
-            return deck;
+            deserializedDeck = OBJECTMAPPER.readValue(deckFile, new TypeReference<>(){});
+            return deserializedDeck;
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("unable to deserialize deck file");
         }
         return null;
     }
