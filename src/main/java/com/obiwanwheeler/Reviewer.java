@@ -1,20 +1,29 @@
 package com.obiwanwheeler;
 
+import com.obiwanwheeler.objects.OptionGroup;
+import com.obiwanwheeler.utilities.CardSelector;
+import com.obiwanwheeler.utilities.DeckFileParser;
+import com.obiwanwheeler.utilities.DeckManipulator;
+import com.obiwanwheeler.utilities.IntervalHandler;
+import com.obiwanwheeler.objects.Card;
+import com.obiwanwheeler.objects.Deck;
+
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Reviewer {
 
-    private final Random random = new Random();
     private final Scanner scanner = new Scanner(System.in);
 
     private final String deckFilePath;
 
     private final int totalNumberOfCardsToBeReviewed;
     private final List<Card> unchangedCards;
-    private final Deck updatedDeck = new Deck(new LinkedList<>());
+    private final Deck updatedDeck;
+    private final IntervalHandler intervalHandler;
 
-    private final List<Deck> splitDeck;
+    List<Card> cardsToReviewToday = new LinkedList<>();
 
     public Reviewer(String deckFilePath){
 
@@ -24,43 +33,46 @@ public class Reviewer {
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
         assert deckToReview != null;
 
-        unchangedCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsNotBeingReviewedToday(deckToReview).cards;
+        updatedDeck = new Deck(new LinkedList<>());
+        updatedDeck.setOptionGroup(deckToReview.getOptionGroup());
+        updatedDeck.setOptionGroupFilePath(deckToReview.getOptionGroupFilePath());
+        OptionGroup reviewSettings = deckToReview.getOptionGroup();
+        intervalHandler = new IntervalHandler(reviewSettings);
+        int numberOfNewCardsToLearnToday = reviewSettings.getNumberOfNewCardsToLearn();
 
-        Deck filteredDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsToBeReviewedToday(deckToReview);
-        totalNumberOfCardsToBeReviewed = filteredDeck.cards.size();
-        splitDeck = DeckManipulator.DECK_MANIPULATOR_SINGLETON.splitDeck(filteredDeck);
+        unchangedCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsNotBeingReviewedToday(deckToReview).getCards();
+
+        List<Card> reappearingKnownCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getKnownCardsToBeReviewedToday(deckToReview);
+        List<Card> potentialNewCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getNewCards(deckToReview);
+
+        for (int i = 0; i < numberOfNewCardsToLearnToday; i++) {
+            if (i == potentialNewCards.size()){
+                break;
+            }
+            Card cardAboutToBeAdded = potentialNewCards.get(i);
+            cardAboutToBeAdded.setInitialViewDate(LocalDate.now());
+            cardsToReviewToday.add(cardAboutToBeAdded);
+        }
+        cardsToReviewToday.addAll(reappearingKnownCards);
+        totalNumberOfCardsToBeReviewed = cardsToReviewToday.size();
     }
 
     public void doReview(){
         //do review
-        CardSelector cardSelector = new CardSelector(splitDeck);
+        CardSelector cardSelector = new CardSelector();
 
-        while(!isFinished(updatedDeck)){
-            //chooses a deck to show a card from
-            Deck deckToPullFrom = cardSelector.chooseADeck();
-            //then tries to remove it from queue if empty, moving onto another iteration if successful
-            if (ableToRemoveDeckFromQueue(deckToPullFrom)){
-                cardSelector.removeDeckFromQueue(deckToPullFrom);
-                continue;
-            }
-            //get lowest interval cards in that deck
-            List<Card> lowestIntervalCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getLowestIntervalCards(deckToPullFrom);
-            //chooses a card from those
-            Card cardToReview = lowestIntervalCards.get(random.nextInt(deckToPullFrom.cards.size()));
+        while(!reviewIsFinished()){
+            Card cardToReview = cardSelector.chooseACard(cardsToReviewToday);
+
             outputCardSides(cardToReview);
             //wait for the user to give input on whether they recalled the card correctly or not
             //and adjust intervals accordingly.
-            waitForAndProcessInput(cardToReview, deckToPullFrom);
+            waitForAndProcessInput(cardToReview);
+
+            System.out.println(cardToReview.getState());
+            System.out.println(cardToReview.getMinutesUntilNextReviewInThisSession().toMinutesPart());
         }
         finishReview();
-    }
-
-    public boolean ableToRemoveDeckFromQueue(Deck potentiallyEmptyDeck){
-        //if all the cards have already been removed from it, it no longer needs to exist in that review session
-        //unless it is the learning queue, as even if initially empty, cards may move into it:
-        //it is the only queue with this behaviour
-        return potentiallyEmptyDeck.cards.stream().noneMatch(c -> c.getState() == Card.CardState.LEARNING) &&
-                potentiallyEmptyDeck.cards.isEmpty();
     }
 
     //TODO do this in FX
@@ -74,57 +86,51 @@ public class Reviewer {
         System.out.println(cardToOutput.getFrontSide() + "\n" + cardToOutput.getBackSide());
     }
 
-    private void waitForAndProcessInput(Card reviewedCard, Deck deckReviewedCardComesFrom){
+    private void waitForAndProcessInput(Card reviewedCard){
 
         boolean markedGood = scanner.next().equals("y");
 
         if (!markedGood){
-            processCardMarkedBad(reviewedCard, deckReviewedCardComesFrom);
+            processCardMarkedBad(reviewedCard);
         }
         else{
-            processCardMarkedGood(reviewedCard, deckReviewedCardComesFrom);
+            processCardMarkedGood(reviewedCard);
         }
     }
 
-    private void processCardMarkedBad(Card markedCard, Deck deckMarkedCardComesFrom){
+    private void processCardMarkedBad(Card markedCard){
         if (markedCard.getState() == Card.CardState.LEARNT){
-            IntervalHandler.INTERVAL_HANDLER_SINGLETON.relearnCard(markedCard);
-            moveCardToDifferentDeck(markedCard, deckMarkedCardComesFrom, splitDeck.get(Card.CardState.LEARNING.ordinal()));
+            intervalHandler.relearnCard(markedCard);
         }
         else {
-            IntervalHandler.INTERVAL_HANDLER_SINGLETON.decreaseInterval(markedCard);
+            intervalHandler.decreaseInterval(markedCard);
         }
     }
 
-    private void processCardMarkedGood(Card markedCard, Deck deckMarkedCardComesFrom){
-        IntervalHandler.INTERVAL_HANDLER_SINGLETON.increaseInterval(markedCard);
+    private void processCardMarkedGood(Card markedCard){
+        intervalHandler.increaseInterval(markedCard);
 
         if (checkIfCardIsFinishedForSession(markedCard)){
-            finishReviewingCardForSession(markedCard, deckMarkedCardComesFrom);
+            finishReviewingCardForSession(markedCard);
         }
     }
 
-    private void moveCardToDifferentDeck(Card cardToMove, Deck sourceDeck, Deck targetDeck){
-        sourceDeck.cards.remove(cardToMove);
-        targetDeck.cards.add(cardToMove);
-    }
-
-    private boolean isFinished(Deck updatedDeck){
-        return updatedDeck.cards.size() == totalNumberOfCardsToBeReviewed;
+    private boolean reviewIsFinished(){
+        return updatedDeck.getCards().size() == totalNumberOfCardsToBeReviewed;
     }
 
     public boolean checkIfCardIsFinishedForSession(Card cardToCheck){
         return cardToCheck.getState() == Card.CardState.LEARNT;
     }
 
-    private void finishReviewingCardForSession(Card finishedCard, Deck sourceDeck){
-        sourceDeck.cards.remove(finishedCard);
-        updatedDeck.cards.add(finishedCard);
+    private void finishReviewingCardForSession(Card finishedCard){
+        cardsToReviewToday.remove(finishedCard);
+        updatedDeck.getCards().add(finishedCard);
     }
 
     private void finishReview(){
         System.out.println("no cards left to review today");
-        updatedDeck.cards.addAll(unchangedCards);
+        updatedDeck.getCards().addAll(unchangedCards);
         DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
     }
 }
