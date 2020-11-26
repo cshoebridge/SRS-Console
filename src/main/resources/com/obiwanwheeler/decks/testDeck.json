@@ -1,15 +1,22 @@
 {
   "cards" : [ {
+    "frontSide" : "subete no sekinin watashi ga toru!",
+    "backSide" : "I'll take all responsibility",
+    "state" : "LEARNT",
+    "initialViewDate" : "2020-11-20",
+    "daysFromFirstSeenToNextReview" : "P4D"
+  }, {
+    "frontSide" : "kazuma-sannnnnn kyouryoku shite yo kazuma-sannnn!",
+    "backSide" : "kazuma-sannnn please just cooperate!",
+    "state" : "LEARNT",
+    "initialViewDate" : "2020-11-26",
+    "daysFromFirstSeenToNextReview" : "P1D"
+  }, {
     "frontSide" : "baka ni shinaide kudasai",
     "backSide" : "please don't make fun of me",
     "state" : "LEARNT",
     "initialViewDate" : "2020-11-20",
-    "daysFromFirstSeenToNextReview" : "P7D"
-  }, {
-    "frontSide" : "subete no sekinin watashi ga toru!",
-    "backSide" : "I'll take all responsibility",
-    "state" : "LEARNT",
-    "initialViewDate" : "2020-11-25",
-    "daysFromFirstSeenToNextReview" : "P4D"
-  } ]
+    "daysFromFirstSeenToNextReview" : "P9D"
+  } ],
+  "optionGroupFilePath" : "src/main/resources/com/obiwanwheeler/option-groups/test-option-group.json"
 }
