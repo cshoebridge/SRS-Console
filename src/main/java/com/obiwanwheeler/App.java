@@ -11,7 +11,7 @@ public class App {
         tempMenu();
     }
 
-    public void tempMenu(){
+    private void tempMenu(){
         System.out.println("create a new deck or new cards (1)\ndo a review (2)");
         Scanner scanner = new Scanner(System.in);
         switch (scanner.nextLine()){

@@ -30,7 +30,6 @@ public class Reviewer {
 
         //TODO get file from FX
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
-
         updatedDeck = new Deck(new LinkedList<>());
         if (Objects.requireNonNull(deckToReview).getDeckName() == null || Objects.requireNonNull(deckToReview).getDeckName().equals("") ){
             String[] splitFilePath = deckFilePath.split("/");
