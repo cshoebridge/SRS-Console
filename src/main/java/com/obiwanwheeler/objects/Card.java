@@ -11,8 +11,8 @@ import java.util.Objects;
 
 public class Card {
 
-    private String frontSide;
-    private String backSide;
+    private String targetLanguageSentence;
+    private String nativeLanguageTranslation;
 
     private CardState state;
 
@@ -23,13 +23,13 @@ public class Card {
     @JsonIgnore private boolean shouldBeReviewed;
 
     @JsonCreator
-    public Card(@JsonProperty("frontSide") String frontSide, @JsonProperty("backSide") String backSide,
+    public Card(@JsonProperty("targetLanguageSentence") String frontSide, @JsonProperty("nativeLanguageSentence") String nativeLanguageTranslation,
                 @JsonProperty("state") CardState state ,
                 @JsonProperty("initialViewDate") LocalDate initialViewDate,
                 @JsonProperty ("daysFromFirstSeenToNextReview") Period daysFromFirstSeenToNextReview) {
-        this.frontSide = frontSide;
-        this.backSide = backSide;
-        this.state = state;
+        this.targetLanguageSentence = frontSide;
+        this.nativeLanguageTranslation = nativeLanguageTranslation;
+        this.state = Objects.requireNonNullElse(state, CardState.NEW);
         this.initialViewDate = initialViewDate;
 
         if (state != CardState.NEW){
@@ -45,20 +45,20 @@ public class Card {
     }
 
     //region getters and setters
-    public String getFrontSide() {
-        return frontSide;
+    public String getTargetLanguageSentence() {
+        return targetLanguageSentence;
     }
 
-    public void setFrontSide(String frontSide) {
-        this.frontSide = frontSide;
+    public void setTargetLanguageSentence(String targetLanguageSentence) {
+        this.targetLanguageSentence = targetLanguageSentence;
     }
 
-    public String getBackSide() {
-        return backSide;
+    public String getNativeLanguageTranslation() {
+        return nativeLanguageTranslation;
     }
 
-    public void setBackSide(String backSide) {
-        this.backSide = backSide;
+    public void setNativeLanguageTranslation(String nativeLanguageTranslation) {
+        this.nativeLanguageTranslation = nativeLanguageTranslation;
     }
 
     public CardState getState() {

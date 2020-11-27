@@ -1,20 +1,20 @@
 {
-  "deckName" : "test deck",
+  "deckName" : "testDeck",
   "cards" : [ {
-    "frontSide" : "subete no sekinin watashi ga toru!",
-    "backSide" : "I'll take all responsibility",
+    "targetLanguageSentence" : "subete no sekinin watashi ga toru!",
+    "nativeLanguageTranslation" : "I'll take all responsibility",
     "state" : "LEARNT",
     "initialViewDate" : "2020-11-20",
     "daysFromFirstSeenToNextReview" : "P8D"
   }, {
-    "frontSide" : "kazuma-sannnnnn kyouryoku shite yo kazuma-sannnn!",
-    "backSide" : "kazuma-sannnn please just cooperate!",
+    "targetLanguageSentence" : "kazuma-sannnnnn kyouryoku shite yo kazuma-sannnn!",
+    "nativeLanguageTranslation" : "kazuma-sannnn please just cooperate!",
     "state" : "LEARNT",
     "initialViewDate" : "2020-11-26",
     "daysFromFirstSeenToNextReview" : "P3D"
   }, {
-    "frontSide" : "baka ni shinaide kudasai",
-    "backSide" : "please don't make fun of me",
+    "targetLanguageSentence" : "baka ni shinaide kudasai",
+    "nativeLanguageTranslation" : "please don't make fun of me",
     "state" : "LEARNT",
     "initialViewDate" : "2020-11-20",
     "daysFromFirstSeenToNextReview" : "P9D"

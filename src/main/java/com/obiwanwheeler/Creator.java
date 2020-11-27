@@ -12,7 +12,7 @@ public class Creator {
         switch (userChoice){
             case "d": new DeckCreator().createNewDeck();
                 break;
-            case "c": //go to card creator
+            case "c": new CardCreator().doCardCreation();
                 break;
         }
     }

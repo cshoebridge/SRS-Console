@@ -18,6 +18,6 @@ public class DeckCreator {
 
     private String askForName(){
         System.out.print("what do you want to name the new deck? : ");
-        return scanner.next();
+        return scanner.nextLine();
     }
 }

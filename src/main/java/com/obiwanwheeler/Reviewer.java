@@ -74,13 +74,13 @@ public class Reviewer {
 
     //TODO do this in FX
     private void outputCardSides(Card cardToOutput){
-        System.out.println(cardToOutput.getFrontSide());
+        System.out.println(cardToOutput.getTargetLanguageSentence());
         try {
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(cardToOutput.getFrontSide() + "\n" + cardToOutput.getBackSide());
+        System.out.println(cardToOutput.getTargetLanguageSentence() + "\n" + cardToOutput.getNativeLanguageTranslation());
     }
 
     private void waitForAndProcessInput(Card reviewedCard){

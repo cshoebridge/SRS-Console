@@ -16,7 +16,7 @@ public final class DeckFileParser {
 
     public static final DeckFileParser DECK_FILE_PARSER_SINGLETON = new DeckFileParser();
 
-    private final String deckFolderPath = "src/main/resources/com/obiwanwheeler/decks/";
+    public static final String deckFolderPath = "src/main/resources/com/obiwanwheeler/decks/";
 
     private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
