@@ -32,6 +32,13 @@ public class Reviewer {
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
 
         updatedDeck = new Deck(new LinkedList<>());
+        if (Objects.requireNonNull(deckToReview).getDeckName() == null || Objects.requireNonNull(deckToReview).getDeckName().equals("") ){
+            String[] splitFilePath = deckFilePath.split("/");
+            updatedDeck.setDeckName(splitFilePath[splitFilePath.length - 1].replace(".json", ""));
+        }
+        else{
+            updatedDeck.setDeckName(deckToReview.getDeckName());
+        }
         updatedDeck.setOptionGroup(Objects.requireNonNull(deckToReview).getOptionGroup());
         updatedDeck.setOptionGroupFilePath(deckToReview.getOptionGroupFilePath());
         OptionGroup reviewSettings = deckToReview.getOptionGroup();
@@ -44,7 +51,7 @@ public class Reviewer {
         List<Card> potentialNewCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getNewCards(deckToReview);
 
         if (potentialNewCards.size() != 0){
-            for (int i = 0; i < numberOfNewCardsToLearnToday || i == potentialNewCards.size(); i++) {
+            for (int i = 0; i < numberOfNewCardsToLearnToday && i < potentialNewCards.size(); i++) {
                 Card cardAboutToBeAdded = potentialNewCards.get(i);
                 cardAboutToBeAdded.setInitialViewDate(LocalDate.now());
                 cardsToReviewToday.add(cardAboutToBeAdded);
