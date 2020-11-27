@@ -1,0 +1,10 @@
+{
+  "graduatingIntervalInDays": 1,
+  "intervalSteps" : [
+    1,
+    10
+  ],
+  "correctAnswerIncreaseInDays": 3,
+  "relapseDecreaseInDays": 2,
+  "numberOfNewCardsToLearn" : 10
+}

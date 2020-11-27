@@ -32,7 +32,7 @@ public class Reviewer {
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
 
         updatedDeck = new Deck(new LinkedList<>());
-        updatedDeck.setOptionGroup(deckToReview.getOptionGroup());
+        updatedDeck.setOptionGroup(Objects.requireNonNull(deckToReview).getOptionGroup());
         updatedDeck.setOptionGroupFilePath(deckToReview.getOptionGroupFilePath());
         OptionGroup reviewSettings = deckToReview.getOptionGroup();
         intervalHandler = new IntervalHandler(reviewSettings);
@@ -66,8 +66,8 @@ public class Reviewer {
             //and adjust intervals accordingly.
             waitForAndProcessInput(cardToReview);
 
-            System.out.println(cardToReview.getState());
-            System.out.println(cardToReview.getMinutesUntilNextReviewInThisSession().toMinutesPart());
+            System.out.println("State: " + cardToReview.getState());
+            System.out.println("Next interval : " + cardToReview.getMinutesUntilNextReviewInThisSession().toMinutesPart());
         }
         finishReview();
     }
@@ -128,6 +128,6 @@ public class Reviewer {
     private void finishReview(){
         System.out.println("no cards left to review today");
         updatedDeck.getCards().addAll(unchangedCards);
-        DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeDeck(deckFilePath, updatedDeck);
+        DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeToExistingDeck(deckFilePath, updatedDeck);
     }
 }

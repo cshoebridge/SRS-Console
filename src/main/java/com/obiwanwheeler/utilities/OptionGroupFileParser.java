@@ -1,6 +1,8 @@
 package com.obiwanwheeler.utilities;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obiwanwheeler.objects.OptionGroup;
 
@@ -10,6 +12,7 @@ import java.io.IOException;
 public class OptionGroupFileParser {
 
     public static final OptionGroupFileParser OPTION_GROUP_FILE_PARSER_SINGLETON = new OptionGroupFileParser();
+    public static final String DEFAULT_OPTION_GROUP_PATH = "src/main/resources/com/obiwanwheeler/option-groups/default-option-group.json";
 
     private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -24,7 +27,10 @@ public class OptionGroupFileParser {
             deserializedOptionGroup = OBJECT_MAPPER.readValue(optionGroupFile, new TypeReference<>() {
             });
             return deserializedOptionGroup;
-        }catch(IOException e){
+        } catch (JsonParseException | JsonMappingException e) {
+            e.printStackTrace();
+            return null;
+        } catch(IOException e){
             e.printStackTrace();
             System.out.println("unable to deserialize option-group file");
             return null;

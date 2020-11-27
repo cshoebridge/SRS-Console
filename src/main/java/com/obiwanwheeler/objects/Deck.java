@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.obiwanwheeler.utilities.OptionGroupFileParser;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Deck {
 
+    private String deckName;
+
     private List<Card> cards;
-    @JsonIgnore private Card.CardState cardTypeHeld;
 
     private String optionGroupFilePath;
     @JsonIgnore private OptionGroup optionGroup;
@@ -18,23 +21,39 @@ public class Deck {
     //used in IDE
     public Deck(List<Card> cards) {
         this.cards = cards;
-        this.cardTypeHeld = null;
         optionGroup = null;
     }
 
-    //used in IDE
-    public Deck(List<Card> cards, Card.CardState cardTypeHeld) {
-        this.cards = cards;
-        this.cardTypeHeld = cardTypeHeld;
-        optionGroup = null;
+    //used by DeckCreator
+    public Deck(String deckName, String optionGroupFilePath){
+        this.deckName = deckName;
+        this.cards = new LinkedList<>();
+        if (optionGroupFilePath == null || optionGroupFilePath.isEmpty()){
+            this.optionGroupFilePath = OptionGroupFileParser.DEFAULT_OPTION_GROUP_PATH;
+        }
+        else{
+            this.optionGroupFilePath = optionGroupFilePath;
+        }
     }
 
     //used by Jackson
     @JsonCreator
-    public Deck(@JsonProperty("cards") List<Card> cards, @JsonProperty("optionGroupFilePath") String optionGroupFilePath){
+    public Deck(@JsonProperty("deckName") String deckName,
+                @JsonProperty("cards") List<Card> cards,
+                @JsonProperty("optionGroupFilePath") String optionGroupFilePath)
+                {
+        this.deckName = deckName;
         this.cards = cards;
         this.optionGroupFilePath = optionGroupFilePath;
         this.optionGroup = OptionGroupFileParser.OPTION_GROUP_FILE_PARSER_SINGLETON.deserializeOptionGroup(optionGroupFilePath);
+    }
+
+    public String getDeckName() {
+        return deckName;
+    }
+
+    public void setDeckName(String deckName) {
+        this.deckName = deckName;
     }
 
     public List<Card> getCards() {
@@ -43,10 +62,6 @@ public class Deck {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
-    }
-
-    public Card.CardState getCardTypeHeld() {
-        return cardTypeHeld;
     }
 
     public String getOptionGroupFilePath() {
