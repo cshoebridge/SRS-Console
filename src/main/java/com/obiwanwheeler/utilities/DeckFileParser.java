@@ -1,15 +1,13 @@
 package com.obiwanwheeler.utilities;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.obiwanwheeler.objects.Deck;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public final class DeckFileParser {
@@ -31,11 +29,10 @@ public final class DeckFileParser {
         try {
             deserializedDeck = OBJECT_MAPPER.readValue(deckFile, new TypeReference<>(){});
             return deserializedDeck;
-        } catch (JsonParseException | JsonMappingException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e){
+            System.out.println("requested deck could not be found");
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("unable to deserialize deck file");
             return null;
         }
@@ -44,13 +41,9 @@ public final class DeckFileParser {
     public void serializeToExistingDeck(String deckFilePath, Deck deckToSerialize) {
         File deckFile = new File(deckFilePath);
         OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
         try {
             OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue(deckFile, deckToSerialize);
-        } catch (JsonGenerationException | JsonMappingException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
             System.out.println("unable to serialize deck");
         }
     }
@@ -61,11 +54,8 @@ public final class DeckFileParser {
         if (canMakeFile(newDeckFile)){
             try {
                 OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValue(newDeckFile, deckToSerialize);
-            } catch (JsonGenerationException | JsonMappingException e) {
-                e.printStackTrace();
             } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("unable to serialize deck");
+                System.out.println("unable to create deck");
             }
         }
         else{

@@ -44,7 +44,12 @@ public class Deck {
                 {
         this.deckName = deckName;
         this.cards = cards;
-        this.optionGroupFilePath = optionGroupFilePath;
+        if (optionGroupFilePath == null || optionGroupFilePath.isEmpty()){
+            this.optionGroupFilePath = OptionGroupFileParser.DEFAULT_OPTION_GROUP_PATH;
+        }
+        else{
+            this.optionGroupFilePath = optionGroupFilePath;
+        }
         this.optionGroup = OptionGroupFileParser.OPTION_GROUP_FILE_PARSER_SINGLETON.deserializeOptionGroup(optionGroupFilePath);
     }
 
@@ -65,7 +70,12 @@ public class Deck {
     }
 
     public String getOptionGroupFilePath() {
-        return optionGroupFilePath;
+        if (optionGroupFilePath == null || optionGroupFilePath.isEmpty()){
+            return OptionGroupFileParser.DEFAULT_OPTION_GROUP_PATH;
+        }
+        else{
+            return optionGroupFilePath;
+        }
     }
 
     public void setOptionGroupFilePath(String optionGroupFilePath) {

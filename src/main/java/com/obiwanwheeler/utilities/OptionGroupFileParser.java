@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obiwanwheeler.objects.OptionGroup;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class OptionGroupFileParser {
@@ -22,16 +23,13 @@ public class OptionGroupFileParser {
         assert optionGroupFilePath != null;
         File optionGroupFile = new File(optionGroupFilePath);
         OptionGroup deserializedOptionGroup;
-
         try{
-            deserializedOptionGroup = OBJECT_MAPPER.readValue(optionGroupFile, new TypeReference<>() {
-            });
+            deserializedOptionGroup = OBJECT_MAPPER.readValue(optionGroupFile, new TypeReference<>() {});
             return deserializedOptionGroup;
-        } catch (JsonParseException | JsonMappingException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.out.println("requested option group could not be found");
             return null;
         } catch(IOException e){
-            e.printStackTrace();
             System.out.println("unable to deserialize option-group file");
             return null;
         }

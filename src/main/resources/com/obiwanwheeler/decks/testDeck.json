@@ -1,18 +1,6 @@
 {
   "deckName" : "testDeck",
   "cards" : [ {
-    "targetLanguageSentence" : "neeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-    "state" : "LEARNT",
-    "initialViewDate" : "2020-11-27",
-    "daysFromFirstSeenToNextReview" : "P1D",
-    "nativeLanguageTranslation" : "*shion noises*"
-  }, {
-    "targetLanguageSentence" : "subete no sekinin watashi ga toru!",
-    "state" : "LEARNT",
-    "initialViewDate" : "2020-11-20",
-    "daysFromFirstSeenToNextReview" : "P8D",
-    "nativeLanguageTranslation" : "I'll take all responsibility"
-  }, {
     "targetLanguageSentence" : "kazuma-sannnnnn kyouryoku shite yo kazuma-sannnn!",
     "state" : "LEARNT",
     "initialViewDate" : "2020-11-26",
@@ -24,6 +12,18 @@
     "initialViewDate" : "2020-11-20",
     "daysFromFirstSeenToNextReview" : "P9D",
     "nativeLanguageTranslation" : "please don't make fun of me"
+  }, {
+    "targetLanguageSentence" : "subete no sekinin watashi ga toru!",
+    "state" : "LEARNT",
+    "initialViewDate" : "2020-11-20",
+    "daysFromFirstSeenToNextReview" : "P10D",
+    "nativeLanguageTranslation" : "I'll take all responsibility"
+  }, {
+    "targetLanguageSentence" : "neeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "state" : "LEARNT",
+    "initialViewDate" : "2020-11-27",
+    "daysFromFirstSeenToNextReview" : "P3D",
+    "nativeLanguageTranslation" : "*shion noises*"
   } ],
   "optionGroupFilePath" : "src/main/resources/com/obiwanwheeler/option-groups/test-option-group.json"
 }

@@ -1,32 +1,35 @@
 package com.obiwanwheeler;
 
-import com.obiwanwheeler.utilities.DeckFileParser;
-import com.obiwanwheeler.utilities.FileExtensions;
-
 import java.util.Scanner;
 
 public class App {
 
+    Scanner scanner = new Scanner(System.in);
+
     public void runApp(){
-        tempMenu();
+        do {
+            tempMenu();
+            System.out.println("do something else?");
+        }while (scanner.nextLine().equals("y"));
     }
 
     private void tempMenu(){
         System.out.println("create a new deck or new cards (1)\ndo a review (2)");
-        Scanner scanner = new Scanner(System.in);
+
         switch (scanner.nextLine()){
             case "1": Creator creator = new Creator();
                 creator.startCreate();
                 break;
             case "2":
-                System.out.println("what deck do you want to review");
-                Reviewer reviewer = new Reviewer(getDeckPathFromName(scanner.nextLine()));
-                //do the review
-                reviewer.doReview();
+                Reviewer reviewer = new Reviewer();
+                if (reviewer.tryInitialiseReview()){
+                    reviewer.doReview();
+                }
+                else{
+                    System.out.println("unable to do the review");
+                }
+                break;
         }
     }
 
-    private String getDeckPathFromName(String deckName){
-        return DeckFileParser.deckFolderPath + deckName + FileExtensions.JSON;
-    }
 }

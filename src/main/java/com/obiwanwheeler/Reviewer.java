@@ -1,10 +1,7 @@
 package com.obiwanwheeler;
 
 import com.obiwanwheeler.objects.OptionGroup;
-import com.obiwanwheeler.utilities.CardSelector;
-import com.obiwanwheeler.utilities.DeckFileParser;
-import com.obiwanwheeler.utilities.DeckManipulator;
-import com.obiwanwheeler.utilities.IntervalHandler;
+import com.obiwanwheeler.utilities.*;
 import com.obiwanwheeler.objects.Card;
 import com.obiwanwheeler.objects.Deck;
 
@@ -16,49 +13,48 @@ public class Reviewer {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    private final String deckFilePath;
+    private String deckFilePath;
 
-    private final int totalNumberOfCardsToBeReviewed;
-    private final List<Card> unchangedCards;
-    private final List<Card> cardsToReviewToday = new LinkedList<>();
-    private final Deck updatedDeck;
-    private final IntervalHandler intervalHandler;
+    private int numberOfCardsLeftToBeReviewed;
+    private List<Card> cardsToReviewToday = new LinkedList<>();
 
-    public Reviewer(String deckFilePath){
+    private Deck updatedDeck;
 
-        this.deckFilePath = deckFilePath;
+    private IntervalHandler intervalHandler;
 
-        //TODO get file from FX
-        Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(this.deckFilePath);
-        updatedDeck = new Deck(new LinkedList<>());
-        if (Objects.requireNonNull(deckToReview).getDeckName() == null || Objects.requireNonNull(deckToReview).getDeckName().equals("") ){
-            String[] splitFilePath = deckFilePath.split("/");
-            updatedDeck.setDeckName(splitFilePath[splitFilePath.length - 1].replace(".json", ""));
+    //region initialise review
+    public boolean tryInitialiseReview(){
+        deckFilePath = DeckFileParser.deckFolderPath + getNameOfDeckToReview() + FileExtensions.JSON;
+        Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(deckFilePath);
+        if (deckToReview == null){
+            return false;
         }
-        else{
-            updatedDeck.setDeckName(deckToReview.getDeckName());
-        }
-        updatedDeck.setOptionGroup(Objects.requireNonNull(deckToReview).getOptionGroup());
-        updatedDeck.setOptionGroupFilePath(deckToReview.getOptionGroupFilePath());
-        OptionGroup reviewSettings = deckToReview.getOptionGroup();
-        intervalHandler = new IntervalHandler(reviewSettings);
-        int numberOfNewCardsToLearnToday = reviewSettings.getNumberOfNewCardsToLearn();
+        initialiseUpdatedDeck(deckToReview);
+        insertUnchangedCards(deckToReview);
 
-        unchangedCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsNotBeingReviewedToday(deckToReview).getCards();
+        intervalHandler = new IntervalHandler(deckToReview.getOptionGroup());
 
-        List<Card> reappearingKnownCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getKnownCardsToBeReviewedToday(deckToReview);
-        List<Card> potentialNewCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getNewCards(deckToReview);
-
-        if (potentialNewCards.size() != 0){
-            for (int i = 0; i < numberOfNewCardsToLearnToday && i < potentialNewCards.size(); i++) {
-                Card cardAboutToBeAdded = potentialNewCards.get(i);
-                cardAboutToBeAdded.setInitialViewDate(LocalDate.now());
-                cardsToReviewToday.add(cardAboutToBeAdded);
-            }
-        }
-        cardsToReviewToday.addAll(reappearingKnownCards);
-        totalNumberOfCardsToBeReviewed = cardsToReviewToday.size();
+        cardsToReviewToday = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsToReviewToday(deckToReview);
+        numberOfCardsLeftToBeReviewed = cardsToReviewToday.size();
+        return true;
     }
+
+    private String getNameOfDeckToReview(){
+        System.out.println("what deck do you want to review");
+        return scanner.nextLine();
+    }
+
+    private void initialiseUpdatedDeck(Deck sourceDeck){
+        updatedDeck = new Deck(new LinkedList<>());
+        updatedDeck.setDeckName(sourceDeck.getDeckName());
+        updatedDeck.setOptionGroupFilePath(sourceDeck.getOptionGroupFilePath());
+    }
+
+    private void insertUnchangedCards(Deck sourceDeck){
+        List<Card> unchangedCards = DeckManipulator.DECK_MANIPULATOR_SINGLETON.getCardsNotBeingReviewedToday(sourceDeck);
+        updatedDeck.getCards().addAll(unchangedCards);
+    }
+    //endregion
 
     public void doReview(){
         //do review
@@ -119,10 +115,11 @@ public class Reviewer {
     }
 
     private boolean reviewIsFinished(){
-        return updatedDeck.getCards().size() == totalNumberOfCardsToBeReviewed;
+        return numberOfCardsLeftToBeReviewed == 0;
     }
 
     public boolean checkIfCardIsFinishedForSession(Card cardToCheck){
+        numberOfCardsLeftToBeReviewed--;
         return cardToCheck.getState() == Card.CardState.LEARNT;
     }
 
@@ -133,7 +130,6 @@ public class Reviewer {
 
     private void finishReview(){
         System.out.println("no cards left to review today");
-        updatedDeck.getCards().addAll(unchangedCards);
         DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeToExistingDeck(deckFilePath, updatedDeck);
     }
 }
