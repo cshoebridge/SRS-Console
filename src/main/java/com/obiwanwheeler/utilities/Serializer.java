@@ -3,7 +3,7 @@ package com.obiwanwheeler.utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.obiwanwheeler.SerializableObject;
+import com.obiwanwheeler.interfaces.SerializableObject;
 
 import java.io.File;
 import java.io.IOException;

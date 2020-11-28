@@ -1,4 +1,4 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.interfaces;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

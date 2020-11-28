@@ -6,6 +6,8 @@ module com.obiwanwheeler {
     requires com.fasterxml.jackson.datatype.jsr310;
 
     opens com.obiwanwheeler to javafx.fxml;
+    exports com.obiwanwheeler.creators;
+    exports com.obiwanwheeler.interfaces;
     exports com.obiwanwheeler.objects;
     exports com.obiwanwheeler.utilities;
     exports com.obiwanwheeler;

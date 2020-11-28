@@ -1,4 +1,4 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.creators;
 
 import com.obiwanwheeler.objects.Deck;
 import com.obiwanwheeler.utilities.FileExtensions;

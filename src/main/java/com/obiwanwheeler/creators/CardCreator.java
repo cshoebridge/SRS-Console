@@ -1,4 +1,4 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.creators;
 
 import com.obiwanwheeler.objects.Card;
 import com.obiwanwheeler.objects.Deck;

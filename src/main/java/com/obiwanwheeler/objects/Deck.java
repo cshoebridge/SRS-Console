@@ -3,7 +3,7 @@ package com.obiwanwheeler.objects;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.obiwanwheeler.SerializableObject;
+import com.obiwanwheeler.interfaces.SerializableObject;
 import com.obiwanwheeler.utilities.OptionGroupFileParser;
 
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package com.obiwanwheeler;
+package com.obiwanwheeler.creators;
 
 import java.util.Scanner;
 
