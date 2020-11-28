@@ -1,0 +1,8 @@
+{
+  "optionGroupName" : "creationtest",
+  "graduatingIntervalInDays" : 1,
+  "intervalSteps" : [ 3, 5, 10 ],
+  "correctAnswerIncreaseInDays" : 4,
+  "relapseDecreaseInDays" : 2,
+  "numberOfNewCardsToLearn" : 12
+}

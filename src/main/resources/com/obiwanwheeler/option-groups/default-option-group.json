@@ -1,4 +1,5 @@
 {
+  "optionGroupName" : "default-option-group",
   "graduatingIntervalInDays": 1,
   "intervalSteps" : [
     1,

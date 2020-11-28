@@ -14,7 +14,7 @@ public class App {
     }
 
     private void tempMenu(){
-        System.out.println("create a new deck or new cards (1)\ndo a review (2)");
+        System.out.println("create a new deck or new cards (1)\ndo a review (2)\ncreate a new options group (3)");
 
         switch (scanner.nextLine()){
             case "1": Creator creator = new Creator();
@@ -28,6 +28,9 @@ public class App {
                 else{
                     System.out.println("unable to do the review");
                 }
+                break;
+            case "3": OptionGroupCreator optionGroupCreator = new OptionGroupCreator();
+                optionGroupCreator.createNewOptionGroup();
                 break;
         }
     }

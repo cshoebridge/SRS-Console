@@ -109,17 +109,17 @@ public class Card {
 
         private CardState state;
 
-        public Builder setFrontSide(String frontSide) {
+        public Builder frontSide(String frontSide) {
             this.frontSide = frontSide;
             return this;
         }
 
-        public Builder setBackSide(String backSide) {
+        public Builder backSide(String backSide) {
             this.backSide = backSide;
             return this;
         }
 
-        public Builder setState(CardState state) {
+        public Builder state(CardState state) {
             this.state = state;
             return this;
         }

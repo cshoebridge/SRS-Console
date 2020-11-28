@@ -24,6 +24,12 @@
     "initialViewDate" : "2020-11-27",
     "daysFromFirstSeenToNextReview" : "P3D",
     "nativeLanguageTranslation" : "*shion noises*"
+  }, {
+    "targetLanguageSentence" : "ikeru ka?",
+    "state" : "LEARNT",
+    "initialViewDate" : "2020-11-28",
+    "daysFromFirstSeenToNextReview" : "P1D",
+    "nativeLanguageTranslation" : "I wonder if it'll work?"
   } ],
   "optionGroupFilePath" : "src/main/resources/com/obiwanwheeler/option-groups/test-option-group.json"
 }

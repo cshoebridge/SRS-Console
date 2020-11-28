@@ -1,12 +1,10 @@
 package com.obiwanwheeler;
 
-import com.obiwanwheeler.objects.OptionGroup;
 import com.obiwanwheeler.utilities.*;
 import com.obiwanwheeler.objects.Card;
 import com.obiwanwheeler.objects.Deck;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 
 public class Reviewer {
@@ -24,7 +22,7 @@ public class Reviewer {
 
     //region initialise review
     public boolean tryInitialiseReview(){
-        deckFilePath = DeckFileParser.deckFolderPath + getNameOfDeckToReview() + FileExtensions.JSON;
+        deckFilePath = DeckFileParser.DECK_FOLDER_PATH + getNameOfDeckToReview() + FileExtensions.JSON;
         Deck deckToReview = DeckFileParser.DECK_FILE_PARSER_SINGLETON.deserializeDeck(deckFilePath);
         if (deckToReview == null){
             return false;
@@ -119,17 +117,17 @@ public class Reviewer {
     }
 
     public boolean checkIfCardIsFinishedForSession(Card cardToCheck){
-        numberOfCardsLeftToBeReviewed--;
         return cardToCheck.getState() == Card.CardState.LEARNT;
     }
 
     private void finishReviewingCardForSession(Card finishedCard){
         cardsToReviewToday.remove(finishedCard);
+        numberOfCardsLeftToBeReviewed--;
         updatedDeck.getCards().add(finishedCard);
     }
 
     private void finishReview(){
         System.out.println("no cards left to review today");
-        DeckFileParser.DECK_FILE_PARSER_SINGLETON.serializeToExistingDeck(deckFilePath, updatedDeck);
+        Serializer.SERIALIZER_SINGLETON.serializeToExisting(deckFilePath, updatedDeck);
     }
 }
